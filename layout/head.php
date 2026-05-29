@@ -14,6 +14,9 @@
     <meta name="apple-mobile-web-app-title" content="FakeGen" />
     <link rel="manifest" href="../public/site.webmanifest" />
 
+    <!-- Simple Analytics Verification -->
+    <meta name="sa-verify" content="fakegeninfjzw7wczvdi57a" />
+
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
