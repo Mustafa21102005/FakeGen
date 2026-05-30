@@ -12,7 +12,9 @@ require_once 'layout/head.php';
                 <div class="w-48 h-48 rounded-3xl overflow-hidden border shadow-2xl">
                     <img src="/public/mustafa.png" alt="Mustafa" class="w-full h-full object-cover" />
                 </div>
-                <div class="absolute -bottom-3 -right-3 shadow-lg border-0 badge badge-secondary badge-lg">Developer</div>
+                <div class="absolute -bottom-3 -right-3 shadow-lg border-0 badge badge-secondary badge-lg">
+                    Full Stack Developer
+                </div>
             </div>
 
             <div class="flex-1 text-center md:text-left">
@@ -25,8 +27,12 @@ require_once 'layout/head.php';
                     FakeGen is one of many projects I build to sharpen my skills and solve real problems.
                 </p>
                 <div class="flex gap-3 mt-5 justify-center md:justify-start flex-wrap">
-                    <a href="https://mustafa-azmi.netlify.app/" target="_blank" class="btn btn-secondary">See my portfolio</a>
-                    <a href="https://github.com/Mustafa21102005" class="btn btn-outline" target="_blank">See my GitHub</a>
+                    <a href="https://mustafa-azmi.netlify.app/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+                        See my portfolio
+                    </a>
+                    <a href="https://github.com/Mustafa21102005" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+                        See my GitHub
+                    </a>
                 </div>
             </div>
         </div>

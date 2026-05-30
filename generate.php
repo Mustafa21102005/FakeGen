@@ -4,7 +4,6 @@ require_once 'layout/head.php';
 ?>
 
 <body class="min-h-screen flex flex-col">
-
     <?php require_once 'layout/navbar.php'; ?>
 
     <main class="flex-1">
@@ -20,8 +19,7 @@ require_once 'layout/head.php';
                         instantly
                     </h1>
                     <p class="py-6 text-xl text-base-content/70">
-                        Create fake names, emails, and phone numbers
-                        for testing, demos, development, and prototypes.
+                        Create fake names, emails, and phone numbers for testing, demos, development, and prototypes.
                     </p>
                 </div>
             </div>
@@ -50,7 +48,7 @@ require_once 'layout/head.php';
                                             Data Type
                                         </span>
                                     </label>
-                                    <select name="type" class="select select-bordered w-full select-lg" required>
+                                    <select name="type" class="select w-full select-lg" required>
                                         <option disabled selected>
                                             Select a type
                                         </option>
@@ -80,8 +78,7 @@ require_once 'layout/head.php';
                                         </span>
                                     </label>
 
-                                    <input type="number" name="quantity" min="1" placeholder="Max is 10,000 😁"
-                                        class="input input-bordered input-lg w-full" required>
+                                    <input type="number" name="quantity" min="1" placeholder="Max is 10,000 😁" max="10000" class="input input-lg w-full" required>
                                 </div>
 
                                 <!-- Submit -->
@@ -100,10 +97,10 @@ require_once 'layout/head.php';
                                 Results
                             </h2>
                             <p class="text-base-content/70 mt-1">
-                                Generated data appears here.
+                                Generated data will appear here.
                             </p>
                         </div>
-                        <div class="flex gap-2">
+                        <div class="flex flex-wrap gap-2 justify-end me-2">
                             <button id="downloadBtn" class="btn btn-accent hidden">
                                 Download JSON
                             </button>
@@ -114,7 +111,7 @@ require_once 'layout/head.php';
                         </div>
                     </div>
                     <div id="results" class="bg-neutral text-neutral-content rounded-2xl shadow-2xl p-6 min-h-[28rem] overflow-auto border border-neutral/50">
-                        <div class="flex items-center justify-center h-full text-neutral-content/60">
+                        <div class="flex items-center justify-center h-full">
                             <div class="text-center">
                                 <div class="text-6xl mb-4">
                                     ⚡
@@ -144,7 +141,8 @@ require_once 'layout/head.php';
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const formData = new FormData(form);
+            const type = form.querySelector('[name="type"]').value;
+            const quantity = form.querySelector('[name="quantity"]').value;
 
             results.innerHTML = `
                 <div class="flex items-center justify-center h-full">
@@ -153,10 +151,15 @@ require_once 'layout/head.php';
             `;
 
             try {
-
                 const response = await fetch('api/generate.php', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        type,
+                        quantity
+                    })
                 });
 
                 const data = await response.json();
@@ -184,32 +187,27 @@ require_once 'layout/head.php';
                 downloadBtn.classList.remove('hidden');
 
                 copyBtn.onclick = async () => {
-                    await navigator.clipboard.writeText(
-                        data.join('\n')
-                    );
-
+                    await navigator.clipboard.writeText(data.join('\n'));
                     copyBtn.innerText = 'Copied!';
-
                     setTimeout(() => {
                         copyBtn.innerText = 'Copy Result';
-                    }, 1500);
+                    }, 2000);
                 };
 
                 downloadBtn.onclick = () => {
-                    const blob = new Blob(
-                        [JSON.stringify(data, null, 2)], {
-                            type: 'application/json'
-                        }
-                    );
+                    const blob = new Blob([JSON.stringify(data, null, 2)], {
+                        type: 'application/json'
+                    });
+
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
 
                     a.href = url;
-                    const type = formData.get('type');
                     a.download = `fakegen-${type}.json`;
 
                     document.body.appendChild(a);
                     a.click();
+
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
                 };

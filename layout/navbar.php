@@ -28,7 +28,7 @@
                 <li><a href="who.php">Who?</a></li>
             </ul>
         </div>
-        <div class="navbar-end">
+        <div class="navbar-end me-3">
             <a href="generate.php" class="btn btn-secondary">Generate Now!</a>
         </div>
     </div>
