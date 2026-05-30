@@ -19,21 +19,21 @@ require_once 'layout/head.php';
     </div>
 
     <div class="flex flex-wrap gap-5 justify-center pb-10">
-        <div class="min-w-sm card bg-base-200 shadow-lg transition">
+        <div class="min-w-xs w-xs card bg-base-200 shadow-lg transition">
             <div class="card-body border-2 border-dashed rounded-2xl items-center text-center hover:border-solid">
                 <span class="text-4xl">🔒</span>
                 <h2 class="card-title">Safe</h2>
                 <p>No signups. No tracking. No nonsense.</p>
             </div>
         </div>
-        <div class="min-w-sm card bg-base-200 shadow-lg transition">
+        <div class="min-w-xs w-xs card bg-base-200 shadow-lg transition">
             <div class="card-body items-center border-2 border-dashed rounded-2xl text-center hover:border-solid">
                 <span class="text-4xl">💵</span>
                 <h2 class="card-title">Free</h2>
                 <p>100% free, forever.</p>
             </div>
         </div>
-        <div class="min-w-sm card bg-base-200 shadow-lg transition">
+        <div class="min-w-xs w-xs card bg-base-200 shadow-lg transition">
             <div class="card-body items-center border-2 border-dashed rounded-2xl text-center hover:border-solid">
                 <span class="text-4xl">📊</span>
                 <h2 class="card-title">No data collection</h2>

@@ -15,14 +15,11 @@ require_once 'layout/head.php';
                     </h1>
 
                     <p class="py-6 text-xl text-base-content/80">
-                        Developers constantly need realistic test data.
-                        Most tools are bloated, locked behind paywalls,
-                        or collect unnecessary user data.
+                        Developers constantly need realistic test data. Most tools are bloated, locked behind paywalls, or collect unnecessary user data.
                     </p>
 
                     <p class="text-lg">
-                        FakeGen was built to be fast, simple, privacy-friendly,
-                        and actually useful.
+                        FakeGen was built to be fast, simple, privacy-friendly, and actually useful.
                     </p>
                 </div>
             </div>
@@ -32,14 +29,12 @@ require_once 'layout/head.php';
             <div class="grid gap-6 md:grid-cols-3">
                 <div class="card bg-base-200 shadow-lg border-2 border-dashed hover:border-solid">
                     <div class="card-body">
-                        <div class="text-4xl">⚡</div>
+                        <div class="text-4xl">🚀</div>
                         <h2 class="card-title">
                             Fast workflow
                         </h2>
                         <p>
-                            Generate realistic fake names, emails,
-                            phones, and other test data instantly
-                            without wasting time configuring tools.
+                            Generate realistic fake names, emails, phones, and other test data instantly without wasting time configuring tools.
                         </p>
                     </div>
                 </div>
@@ -51,9 +46,7 @@ require_once 'layout/head.php';
                             Privacy first
                         </h2>
                         <p>
-                            No accounts. No analytics obsession.
-                            No selling user data.
-                            Just generate what you need and leave.
+                            No accounts. No analytics obsession. No selling user data. Just generate what you need and leave.
                         </p>
                     </div>
                 </div>
@@ -65,9 +58,7 @@ require_once 'layout/head.php';
                             Built for developers
                         </h2>
                         <p>
-                            Useful for testing forms, databases,
-                            demos, UI states, authentication flows,
-                            and development environments.
+                            Useful for testing forms, databases, demos, UI states, authentication flows, and development environments.
                         </p>
                     </div>
                 </div>
@@ -81,15 +72,11 @@ require_once 'layout/head.php';
                 </h2>
 
                 <p class="text-lg leading-relaxed text-base-content/80">
-                    FakeGen is intentionally lightweight.
-                    It is not trying to become a giant platform,
-                    collect user profiles, or trap features behind subscriptions.
+                    FakeGen is intentionally lightweight. It is not trying to become a giant platform, collect user profiles, or trap features behind subscriptions.
                 </p>
 
                 <p class="mt-6 text-lg leading-relaxed text-base-content/80">
-                    The goal is straightforward:
-                    help developers generate useful fake data quickly,
-                    safely, and without friction.
+                    The goal is straightforward: Help developers generate useful fake data quickly, safely, and without friction.
                 </p>
             </div>
         </section>
