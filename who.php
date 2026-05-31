@@ -1,5 +1,8 @@
 <?php
-$title = 'Who? Me?';
+$title = 'Who Built FakeGen';
+$description = 'FakeGen was built by Mustafa Azmi, a developer passionate about useful, privacy-first tools. Learn more about the author and the project.';
+$keywords = 'FakeGen author, Mustafa Azmi, about FakeGen, who made FakeGen';
+$canonical = 'https://fakegen.infinityfreeapp.com/who.php';
 require_once 'layout/head.php';
 ?>
 

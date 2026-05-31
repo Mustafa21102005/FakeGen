@@ -1,5 +1,8 @@
 <?php
-$title = 'Why?';
+$title = 'Why FakeGen';
+$description = 'Find out why developers choose FakeGen for test data. Zero tracking, no accounts, lightweight, and open-source — built with privacy first.';
+$keywords = 'why FakeGen, fake data privacy, open source fake data, no tracking developer tool';
+$canonical = 'https://fakegen.infinityfreeapp.com/why.php';
 require_once 'layout/head.php';
 ?>
 
