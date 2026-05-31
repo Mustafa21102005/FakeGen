@@ -1,5 +1,8 @@
 <?php
-$title = 'Welcome';
+$title = 'Home';
+$description = 'FakeGen is a free, private fake data generator for developers. Generate realistic names, emails, and phone numbers instantly — no signup, no tracking.';
+$keywords = 'fake data generator, dummy data, test data, developer tools, free fake data';
+$canonical = 'https://fakegen.infinityfreeapp.com/';
 require_once 'layout/head.php';
 ?>
 

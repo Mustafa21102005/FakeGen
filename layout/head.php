@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>FakeGen | <?= $title ?></title>
+    <meta name="description"
+        content="<?= $description ?? 'FakeGen — Generate realistic fake data instantly. Free, private, no signups required.' ?>">
+    <meta name="keywords" content="<?= $keywords ?? 'fake data generator, test data, dummy data, developer tools' ?>">
+    <meta name="author" content="Mustafa Azmi">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="<?= $canonical ?>">
 
     <link rel="icon" type="image/png" href="../public/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="../public/favicon.svg" />

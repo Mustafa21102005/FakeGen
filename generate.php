@@ -1,5 +1,8 @@
 <?php
 $title = 'Generate';
+$description = 'Generate realistic fake names, emails, and phone numbers in one click. Copy to clipboard or download as JSON — fast, free, and private.';
+$keywords = 'generate fake names, fake emails, fake phone numbers, dummy data, JSON test data';
+$canonical = 'https://fakegen.infinityfreeapp.com/generate.php';
 require_once 'layout/head.php';
 ?>
 
