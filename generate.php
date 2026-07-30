@@ -70,6 +70,11 @@ require_once 'layout/head.php';
                                             <?= isset($_GET['type']) && $_GET['type'] == 'phone' ? 'selected' : '' ?>>
                                             Fake Phones
                                         </option>
+
+                                        <option value="color"
+                                            <?= isset($_GET['type']) && $_GET['type'] == 'color' ? 'selected' : '' ?>>
+                                            Fake Colors
+                                        </option>
                                     </select>
                                 </div>
 
@@ -141,6 +146,54 @@ require_once 'layout/head.php';
         const copyBtn = document.getElementById('copyBtn');
         const downloadBtn = document.getElementById('downloadBtn');
 
+        function renderStrings(data) {
+            return `
+                <div class="space-y-2 font-mono text-sm">
+                    ${data.map(item => `
+                        <div class="bg-base-100/10 rounded-lg px-4 py-3 border border-white/5">
+                            ${item}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderColors(data) {
+            return `
+                <div class="grid sm:grid-cols-2 gap-4">
+                    ${data.map(color => `
+                        <div class="text-black rounded-xl overflow-hidden border border-base-300 bg-base-100 shadow-lg">
+
+                            <div
+                                class="h-28 border-b border-base-300"
+                                style="background:${color.hex}">
+                            </div>
+
+                            <div class="p-4 font-mono space-y-2">
+
+                                <div class="flex justify-between">
+                                    <span class="font-semibold">HEX</span>
+                                    <span>${color.hex}</span>
+                                </div>
+
+                                <div class="flex justify-between">
+                                    <span class="font-semibold">RGB</span>
+                                    <span>${color.rgb}</span>
+                                </div>
+
+                                <div class="flex justify-between">
+                                    <span class="font-semibold">HSL</span>
+                                    <span>${color.hsl}</span>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -176,22 +229,25 @@ require_once 'layout/head.php';
                     return;
                 }
 
-                results.innerHTML = `
-                    <div class="space-y-2 font-mono text-sm">
-                        ${data.map(item => `
-                            <div class="bg-base-100/10 rounded-lg px-4 py-3 border border-white/5">
-                                ${item}
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
+                results.innerHTML =
+                    type === 'color' ?
+                    renderColors(data) :
+                    renderStrings(data);
 
                 copyBtn.classList.remove('hidden');
                 downloadBtn.classList.remove('hidden');
 
                 copyBtn.onclick = async () => {
-                    await navigator.clipboard.writeText(data.join('\n'));
+
+                    const text =
+                        type === 'color' ?
+                        JSON.stringify(data, null, 2) :
+                        data.join('\n');
+
+                    await navigator.clipboard.writeText(text);
+
                     copyBtn.innerText = 'Copied!';
+
                     setTimeout(() => {
                         copyBtn.innerText = 'Copy Result';
                     }, 2000);

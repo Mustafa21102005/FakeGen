@@ -17,9 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $type = trim($_POST['type'] ?? '');
 $quantity = (int) ($_POST['quantity'] ?? 0);
 
-$allowedTypes = ['name', 'email', 'phone'];
+$generators = [
+    'color' => fn() => getRandomColor(),
+    'email' => fn() => getRandomEmail($names, $emails),
+    'name' => fn() => getRandomName($names),
+    'phone' => fn() => getRandomPhoneNumber($phones),
+];
 
-if (!in_array($type, $allowedTypes)) {
+if (!array_key_exists($type, $generators)) {
     http_response_code(422);
 
     echo json_encode([
@@ -42,21 +47,7 @@ if ($quantity < 1 || $quantity > 10000) {
 $result = [];
 
 for ($i = 0; $i < $quantity; $i++) {
-
-    switch ($type) {
-
-        case 'name':
-            $result[] = getRandomName($names);
-            break;
-
-        case 'email':
-            $result[] = getRandomEmail($names, $emails);
-            break;
-
-        case 'phone':
-            $result[] = getRandomPhoneNumber($phones);
-            break;
-    }
+    $result[] = $generators[$type]();
 }
 
 http_response_code(200);
