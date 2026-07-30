@@ -23,4 +23,52 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style>
+        #results {
+            transition: opacity 200ms ease, transform 200ms ease;
+        }
+
+        #results.is-changing {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px) scale(.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .color-card {
+            opacity: 0;
+        }
+
+        .color-card.show {
+            animation: cardFadeIn .45s cubic-bezier(.22, 1, .36, 1) forwards;
+        }
+
+        #passwordOptions {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(-8px);
+            transition:
+                max-height .35s ease,
+                opacity .25s ease,
+                transform .35s cubic-bezier(.22, 1, .36, 1);
+        }
+
+        #passwordOptions.show {
+            max-height: 500px;
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
 </head>

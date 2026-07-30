@@ -75,6 +75,11 @@ require_once 'layout/head.php';
                                             <?= isset($_GET['type']) && $_GET['type'] == 'color' ? 'selected' : '' ?>>
                                             Fake Colors
                                         </option>
+
+                                        <option value="password"
+                                            <?= isset($_GET['type']) && $_GET['type'] == 'password' ? 'selected' : '' ?>>
+                                            Fake Passwords
+                                        </option>
                                     </select>
                                 </div>
 
@@ -87,6 +92,46 @@ require_once 'layout/head.php';
                                     </label>
 
                                     <input type="number" name="quantity" min="1" placeholder="Max is 10,000 😁" max="10000" class="input input-lg w-full" required>
+                                </div>
+
+                                <div id="passwordOptions" class="hidden space-y-4">
+                                    <div>
+                                        <label class="label">
+                                            <span class="label-text font-medium">
+                                                Password Length
+                                            </span>
+                                        </label>
+
+                                        <input
+                                            type="number"
+                                            name="length"
+                                            min="4"
+                                            max="256"
+                                            value="16"
+                                            class="input input-lg w-full">
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <label class="cursor-pointer label justify-start gap-3">
+                                            <input type="checkbox" name="uppercase" class="checkbox" checked>
+                                            <span class="label-text">Uppercase Letters</span>
+                                        </label>
+
+                                        <label class="cursor-pointer label justify-start gap-3">
+                                            <input type="checkbox" name="lowercase" class="checkbox" checked>
+                                            <span class="label-text">Lowercase Letters</span>
+                                        </label>
+
+                                        <label class="cursor-pointer label justify-start gap-3">
+                                            <input type="checkbox" name="numbers" class="checkbox" checked>
+                                            <span class="label-text">Numbers</span>
+                                        </label>
+
+                                        <label class="cursor-pointer label justify-start gap-3">
+                                            <input type="checkbox" name="symbols" class="checkbox" checked>
+                                            <span class="label-text">Symbols</span>
+                                        </label>
+                                    </div>
                                 </div>
 
                                 <!-- Submit -->
@@ -114,7 +159,7 @@ require_once 'layout/head.php';
                             </button>
 
                             <button id="copyBtn" class="btn btn-secondary hidden">
-                                Copy Result
+                                Copy JSON
                             </button>
                         </div>
                     </div>
@@ -145,6 +190,57 @@ require_once 'layout/head.php';
         const results = document.getElementById('results');
         const copyBtn = document.getElementById('copyBtn');
         const downloadBtn = document.getElementById('downloadBtn');
+        const typeSelect = form.querySelector('[name="type"]');
+        const passwordOptions = document.getElementById('passwordOptions');
+        const generateBtn = form.querySelector('button[type="submit"]');
+        const uppercase = form.querySelector('[name="uppercase"]');
+        const lowercase = form.querySelector('[name="lowercase"]');
+        const numbers = form.querySelector('[name="numbers"]');
+        const symbols = form.querySelector('[name="symbols"]');
+
+        function togglePasswordOptions() {
+            if (typeSelect.value === 'password') {
+                passwordOptions.classList.remove('hidden');
+
+                requestAnimationFrame(() => {
+                    passwordOptions.classList.add('show');
+                });
+            } else {
+                passwordOptions.classList.remove('show');
+
+                setTimeout(() => {
+                    passwordOptions.classList.add('hidden');
+                }, 350);
+            }
+        }
+
+        function validatePasswordOptions() {
+            if (typeSelect.value !== 'password') {
+                generateBtn.disabled = false;
+                return;
+            }
+
+            const enabled =
+                uppercase.checked ||
+                lowercase.checked ||
+                numbers.checked ||
+                symbols.checked;
+
+            generateBtn.disabled = !enabled;
+        }
+
+        typeSelect.addEventListener('change', togglePasswordOptions);
+
+        togglePasswordOptions();
+
+        uppercase.addEventListener('change', validatePasswordOptions);
+        lowercase.addEventListener('change', validatePasswordOptions);
+        numbers.addEventListener('change', validatePasswordOptions);
+        symbols.addEventListener('change', validatePasswordOptions);
+
+        typeSelect.addEventListener('change', validatePasswordOptions);
+
+        validatePasswordOptions();
 
         function renderStrings(data) {
             return `
@@ -158,11 +254,32 @@ require_once 'layout/head.php';
             `;
         }
 
+        function toJson(type, data) {
+            if (type === 'color') {
+                return data;
+            }
+
+            const keyMap = {
+                name: 'name',
+                email: 'email',
+                phone: 'phone',
+                password: 'password'
+            };
+
+            const key = keyMap[type] || 'value';
+
+            return data.map(item => ({
+                [key]: item
+            }));
+        }
+
         function renderColors(data) {
             return `
                 <div class="grid sm:grid-cols-2 gap-4">
-                    ${data.map(color => `
-                        <div class="text-black rounded-xl overflow-hidden border border-base-300 bg-base-100 shadow-lg">
+                    ${data.map((color, index) => `
+                        <div
+                            class="color-card text-black rounded-xl overflow-hidden border border-base-300 bg-base-100 shadow-lg"
+                            style="animation-delay:${index * 50}ms">
 
                             <div
                                 class="h-28 border-b border-base-300"
@@ -194,17 +311,34 @@ require_once 'layout/head.php';
             `;
         }
 
+        async function updateResults(html) {
+            results.classList.add('is-changing');
+
+            await new Promise(resolve => setTimeout(resolve, 200));
+
+            results.innerHTML = html;
+
+            results.classList.remove('is-changing');
+        }
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const type = form.querySelector('[name="type"]').value;
             const quantity = form.querySelector('[name="quantity"]').value;
 
-            results.innerHTML = `
+            const length = form.querySelector('[name="length"]').value;
+
+            const uppercaseValue = uppercase.checked;
+            const lowercaseValue = lowercase.checked;
+            const numbersValue = numbers.checked;
+            const symbolsValue = symbols.checked;
+
+            await updateResults(`
                 <div class="flex items-center justify-center h-full">
-                    <span>Loading...</span>
+                    <span class="loading loading-spinner loading-lg"></span>
                 </div>
-            `;
+            `);
 
             try {
                 const response = await fetch('api/generate.php', {
@@ -214,7 +348,12 @@ require_once 'layout/head.php';
                     },
                     body: new URLSearchParams({
                         type,
-                        quantity
+                        quantity,
+                        length,
+                        uppercase: uppercaseValue,
+                        lowercase: lowercaseValue,
+                        numbers: numbersValue,
+                        symbols: symbolsValue
                     })
                 });
 
@@ -229,27 +368,36 @@ require_once 'layout/head.php';
                     return;
                 }
 
-                results.innerHTML =
+                await updateResults(
                     type === 'color' ?
                     renderColors(data) :
-                    renderStrings(data);
+                    renderStrings(data)
+                );
+
+                if (type === 'color') {
+                    const cards = results.querySelectorAll('.color-card');
+
+                    cards.forEach((card, index) => {
+                        setTimeout(() => {
+                            card.classList.add('show');
+                        }, index * 60);
+                    });
+                }
 
                 copyBtn.classList.remove('hidden');
                 downloadBtn.classList.remove('hidden');
 
                 copyBtn.onclick = async () => {
+                    const json = toJson(type, data);
 
-                    const text =
-                        type === 'color' ?
-                        JSON.stringify(data, null, 2) :
-                        data.join('\n');
+                    await navigator.clipboard.writeText(
+                        JSON.stringify(json, null, 2)
+                    );
 
-                    await navigator.clipboard.writeText(text);
-
-                    copyBtn.innerText = 'Copied!';
+                    copyBtn.textContent = 'Copied!';
 
                     setTimeout(() => {
-                        copyBtn.innerText = 'Copy Result';
+                        copyBtn.textContent = 'Copy Result';
                     }, 2000);
                 };
 
@@ -272,11 +420,11 @@ require_once 'layout/head.php';
                 };
 
             } catch (error) {
-                results.innerHTML = `
+                await updateResults(`
                     <div class="alert alert-error">
                         <span>${error.message}</span>
                     </div>
-                `;
+                `);
             }
         });
     </script>
