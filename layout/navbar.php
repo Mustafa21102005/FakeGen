@@ -22,6 +22,7 @@
                             <li><a href="generate.php?type=name">Fake Names</a></li>
                             <li><a href="generate.php?type=email">Fake Emails</a></li>
                             <li><a href="generate.php?type=phone">Fake Phones</a></li>
+                            <li><a href="generate.php?type=color">Fake Colors</a></li>
                         </ul>
                     </details>
                 </li>
