@@ -249,3 +249,84 @@ if (!function_exists('getRandomColor')) {
         ];
     }
 }
+
+if (!function_exists('getRandomPassword')) {
+    /**
+     * Generate a random password.
+     *
+     * The generated password is guaranteed to contain at least one
+     * character from each enabled character set.
+     *
+     * Example output:
+     * m7@Q!xP2#Ld9
+     *
+     * @param int $length Desired password length.
+     * @param bool $uppercase Whether to include uppercase letters (A-Z).
+     * @param bool $lowercase Whether to include lowercase letters (a-z).
+     * @param bool $numbers Whether to include numeric digits (0-9).
+     * @param bool $symbols Whether to include special characters.
+     * @return string
+     *
+     * @throws InvalidArgumentException If no character sets are selected.
+     * @throws InvalidArgumentException If the requested length is smaller than
+     *                                  the number of enabled character sets.
+     */
+    function getRandomPassword(
+        int $length = 16,
+        bool $uppercase = true,
+        bool $lowercase = true,
+        bool $numbers = true,
+        bool $symbols = true
+    ): string {
+        $pool = '';
+        $password = [];
+
+        if ($uppercase) {
+            $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+            $pool .= $chars;
+            $password[] = $chars[random_int(0, strlen($chars) - 1)];
+        }
+
+        if ($lowercase) {
+            $chars = 'abcdefghijklmnopqrstuvwxyz';
+
+            $pool .= $chars;
+            $password[] = $chars[random_int(0, strlen($chars) - 1)];
+        }
+
+        if ($numbers) {
+            $chars = '0123456789';
+
+            $pool .= $chars;
+            $password[] = $chars[random_int(0, strlen($chars) - 1)];
+        }
+
+        if ($symbols) {
+            $chars = '!@#$%^&*-_?';
+
+            $pool .= $chars;
+            $password[] = $chars[random_int(0, strlen($chars) - 1)];
+        }
+
+        if ($pool === '') {
+            throw new InvalidArgumentException(
+                'At least one character set must be selected.'
+            );
+        }
+
+        if ($length < count($password)) {
+            throw new InvalidArgumentException(
+                'Password length is too short for the selected character sets.'
+            );
+        }
+
+        while (count($password) < $length) {
+            $password[] = $pool[random_int(0, strlen($pool) - 1)];
+        }
+
+        shuffle($password);
+
+        return implode('', $password);
+    }
+}
