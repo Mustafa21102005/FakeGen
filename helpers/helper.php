@@ -1,13 +1,28 @@
 <?php
 
 /** @var array<string, array<string>> $names */
-$names = json_decode(file_get_contents('../data/names.json'), true);
+$names = json_decode(
+    file_get_contents(__DIR__ . '/../data/names.json'),
+    true
+);
+
+$GLOBALS['names'] = $names;
 
 /** @var array<string, array<string>> $emails */
-$emails = json_decode(file_get_contents('../data/emails.json'), true);
+$emails = json_decode(
+    file_get_contents(__DIR__ . '/../data/emails.json'),
+    true
+);
+
+$GLOBALS['emails'] = $emails;
 
 /** @var array<string, array<string>> $phones */
-$phones = json_decode(file_get_contents('../data/phones.json'), true);
+$phones = json_decode(
+    file_get_contents(__DIR__ . '/../data/phones.json'),
+    true
+);
+
+$GLOBALS['phones'] = $phones;
 
 if (!function_exists('getRandomFirstName')) {
     /**
