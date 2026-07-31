@@ -1,6 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 require_once '../helpers/helper.php';
+require_once '../helpers/generator.php';
 
 header('Content-Type: application/json');
 
@@ -11,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         'message' => 'Method not allowed.'
     ]);
 
-    exit();
+    exit;
 }
 
 $type = trim($_POST['type'] ?? '');
@@ -39,60 +42,24 @@ $symbols = filter_var(
     FILTER_VALIDATE_BOOLEAN
 );
 
-$generators = [
-    'color' => fn() => getRandomColor(),
-    'email' => fn() => getRandomEmail($names, $emails),
-    'name' => fn() => getRandomName($names),
-    'password' => fn() => getRandomPassword(
+try {
+    $result = generate(
+        $type,
+        $quantity,
         $passwordLength,
         $uppercase,
         $lowercase,
         $numbers,
         $symbols
-    ),
-    'phone' => fn() => getRandomPhoneNumber($phones),
-];
+    );
 
-if (!array_key_exists($type, $generators)) {
+    http_response_code(200);
+
+    echo json_encode($result);
+} catch (InvalidArgumentException $e) {
     http_response_code(422);
 
     echo json_encode([
-        'message' => 'Type is not accepted.'
+        'message' => $e->getMessage()
     ]);
-
-    exit();
 }
-
-if ($quantity < 1 || $quantity > 10000) {
-    http_response_code(422);
-
-    echo json_encode([
-        'message' => 'Quantity must be between 1 and 10000.'
-    ]);
-
-    exit();
-}
-
-if ($type === 'password') {
-    if ($passwordLength < 4 || $passwordLength > 256) {
-        http_response_code(422);
-
-        echo json_encode([
-            'message' => 'Password length must be between 4 and 256.'
-        ]);
-
-        exit();
-    }
-}
-
-$result = [];
-
-for ($i = 0; $i < $quantity; $i++) {
-    $result[] = $generators[$type]();
-}
-
-http_response_code(200);
-
-echo json_encode($result);
-
-exit();
