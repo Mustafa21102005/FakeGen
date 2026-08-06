@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 require_once './helpers/helper.php';
 require_once './helpers/generator.php';
+require_once './helpers/object.php';
 
 final class GeneratorTest extends TestCase
 {
@@ -66,6 +67,49 @@ final class GeneratorTest extends TestCase
             $this->assertArrayHasKey('hex', $color);
             $this->assertArrayHasKey('rgb', $color);
             $this->assertArrayHasKey('hsl', $color);
+        }
+    }
+
+    public function testGenerateUsers(): void
+    {
+        $result = generate(
+            'user',
+            5,
+            20,
+            true,
+            true,
+            true,
+            true
+        );
+
+        $this->assertCount(5, $result);
+
+        foreach ($result as $user) {
+            $this->assertIsArray($user);
+
+            $this->assertArrayHasKey('name', $user);
+            $this->assertArrayHasKey('email', $user);
+            $this->assertArrayHasKey('phone', $user);
+            $this->assertArrayHasKey('password', $user);
+            $this->assertArrayHasKey('favorite_color', $user);
+
+            $this->assertIsString($user['name']);
+
+            $this->assertTrue(
+                filter_var($user['email'], FILTER_VALIDATE_EMAIL) !== false
+            );
+
+            $this->assertMatchesRegularExpression(
+                '/^\+\d+\s\d{9}$/',
+                $user['phone']
+            );
+
+            $this->assertSame(20, strlen($user['password']));
+
+            $this->assertIsArray($user['favorite_color']);
+            $this->assertArrayHasKey('hex', $user['favorite_color']);
+            $this->assertArrayHasKey('rgb', $user['favorite_color']);
+            $this->assertArrayHasKey('hsl', $user['favorite_color']);
         }
     }
 

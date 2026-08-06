@@ -90,6 +90,30 @@ if (!function_exists('getRandomEmail')) {
     }
 }
 
+if (!function_exists('getRandomEmailFromName')) {
+    /**
+     * Generate an email address from a full name.
+     *
+     * @param string $name Full name to use.
+     * @param array{
+     *     emails: array<int, string>
+     * } $domains Available email domains.
+     *
+     * @return string
+     */
+    function getRandomEmailFromName(string $name, array $domains): string
+    {
+        [$firstName, $lastName] = explode(' ', strtolower($name), 2);
+
+        return sprintf(
+            '%s.%s@%s',
+            $firstName,
+            $lastName,
+            $domains['emails'][array_rand($domains['emails'])]
+        );
+    }
+}
+
 if (!function_exists('getRandomPhoneNumber')) {
     /**
      * Generate a random international phone number.

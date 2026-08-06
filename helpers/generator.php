@@ -14,7 +14,25 @@ if (!function_exists('generate')) {
      * @param bool $numbers Include numeric digits.
      * @param bool $symbols Include symbols.
      *
-     * @return array<int, string|array<string, string>>
+     *  @return array<int,
+     *     string|
+     *     array{
+     *         hex: string,
+     *         rgb: string,
+     *         hsl: string
+     *     }|
+     *     array{
+     *         name: string,
+     *         email: string,
+     *         phone: string,
+     *         password: string,
+     *         favorite_color: array{
+     *             hex: string,
+     *             rgb: string,
+     *             hsl: string
+     *         }
+     *     }
+     * >
      *
      * @throws InvalidArgumentException
      */
@@ -42,6 +60,16 @@ if (!function_exists('generate')) {
                 $symbols
             ),
             'phone' => fn() => getRandomPhoneNumber($phones),
+            'user' => fn() => getRandomUser(
+                $names,
+                $emails,
+                $phones,
+                $passwordLength,
+                $uppercase,
+                $lowercase,
+                $numbers,
+                $symbols
+            ),
         ];
 
         if (!array_key_exists($type, $generators)) {
