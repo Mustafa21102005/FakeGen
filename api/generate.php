@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once '../helpers/helper.php';
 require_once '../helpers/generator.php';
+require_once '../helpers/object.php';
 
 header('Content-Type: application/json');
 

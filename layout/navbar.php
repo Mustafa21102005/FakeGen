@@ -18,12 +18,10 @@
                 <li>
                     <details>
                         <summary>Generate</summary>
-                        <ul class="w-34">
-                            <li><a href="generate.php?type=name">Fake Names</a></li>
-                            <li><a href="generate.php?type=email">Fake Emails</a></li>
-                            <li><a href="generate.php?type=phone">Fake Phones</a></li>
-                            <li><a href="generate.php?type=color">Fake Colors</a></li>
-                            <li><a href="generate.php?type=password">Fake Passwords</a></li>
+                        <ul class="w-37">
+                            <?php
+                            require './layout/partials/generate-links.php';
+                            ?>
                         </ul>
                     </details>
                 </li>
@@ -41,11 +39,9 @@
             <li>
                 <a href="generate.php">Generate</a>
                 <ul>
-                    <li><a href="generate.php?type=name">Fake Names</a></li>
-                    <li><a href="generate.php?type=email">Fake Emails</a></li>
-                    <li><a href="generate.php?type=phone">Fake Phones</a></li>
-                    <li><a href="generate.php?type=color">Fake Colors</a></li>
-                    <li><a href="generate.php?type=password">Fake Passwords</a></li>
+                    <?php
+                    require './layout/partials/generate-links.php';
+                    ?>
                 </ul>
             </li>
             <li><a href="who.php">Who?</a></li>
