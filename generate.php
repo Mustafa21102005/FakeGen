@@ -261,22 +261,11 @@ require_once 'layout/head.php';
         }
 
         function toJson(type, data) {
-            if (type === 'color') {
-                return data;
-            }
-
-            const keyMap = {
-                name: 'name',
-                email: 'email',
-                phone: 'phone',
-                password: 'password'
-            };
-
-            const key = keyMap[type] || 'value';
-
-            return data.map(item => ({
-                [key]: item
-            }));
+            return data.map(item =>
+                typeof item === 'string' ? {
+                    [type]: item
+                } : item
+            );
         }
 
         function renderColors(data) {
@@ -403,12 +392,12 @@ require_once 'layout/head.php';
                     copyBtn.textContent = 'Copied!';
 
                     setTimeout(() => {
-                        copyBtn.textContent = 'Copy Result';
+                        copyBtn.textContent = 'Copy JSON';
                     }, 2000);
                 };
 
                 downloadBtn.onclick = () => {
-                    const blob = new Blob([JSON.stringify(data, null, 2)], {
+                    const blob = new Blob([JSON.stringify(toJson(type, data), null, 2)], {
                         type: 'application/json'
                     });
 
