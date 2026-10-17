@@ -73,6 +73,42 @@ final class HelperTest extends TestCase
         );
     }
 
+    public function testRandomUsernameMatchesPattern(): void
+    {
+        for ($i = 0; $i < 100; $i++) {
+            $this->assertMatchesRegularExpression(
+                '/^[a-z]+[._]?[a-z]+\d{1,2}$/',
+                getRandomUsername($this->names)
+            );
+        }
+    }
+
+    public function testRandomUrlIsValidHttpsUrl(): void
+    {
+        for ($i = 0; $i < 100; $i++) {
+            $url = getRandomUrl($this->names);
+
+            $this->assertNotFalse(filter_var($url, FILTER_VALIDATE_URL), $url);
+            $this->assertStringStartsWith('https://www.', $url);
+        }
+    }
+
+    public function testRandomDateIsValidAndInRange(): void
+    {
+        $today = gmdate('Y-m-d');
+
+        for ($i = 0; $i < 100; $i++) {
+            $date = getRandomDate();
+
+            $parsed = DateTime::createFromFormat('Y-m-d', $date);
+
+            $this->assertNotFalse($parsed);
+            $this->assertSame($date, $parsed->format('Y-m-d'));
+            $this->assertGreaterThanOrEqual('1970-01-01', $date);
+            $this->assertLessThanOrEqual($today, $date);
+        }
+    }
+
     public function testRandomRgbValuesAreWithinRange(): void
     {
         $rgb = getRandomRgb();

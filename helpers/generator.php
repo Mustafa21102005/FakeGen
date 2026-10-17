@@ -50,6 +50,7 @@ if (!function_exists('generate')) {
 
         $generators = [
             'color' => fn() => getRandomColor(),
+            'date' => fn() => getRandomDate(),
             'email' => fn() => getRandomEmail($names, $emails),
             'name' => fn() => getRandomName($names),
             'password' => fn() => getRandomPassword(
@@ -60,6 +61,7 @@ if (!function_exists('generate')) {
                 $symbols
             ),
             'phone' => fn() => getRandomPhoneNumber($phones),
+            'url' => fn() => getRandomUrl($names),
             'user' => fn() => getRandomUser(
                 $names,
                 $emails,
@@ -70,6 +72,7 @@ if (!function_exists('generate')) {
                 $numbers,
                 $symbols
             ),
+            'username' => fn() => getRandomUsername($names),
         ];
 
         if (!array_key_exists($type, $generators)) {

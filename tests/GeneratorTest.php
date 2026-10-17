@@ -30,6 +30,20 @@ final class GeneratorTest extends TestCase
         }
     }
 
+    public function testGenerateUsernames(): void
+    {
+        $result = generate('username', 20);
+
+        $this->assertCount(20, $result);
+
+        foreach ($result as $username) {
+            $this->assertMatchesRegularExpression(
+                '/^[a-z]+[._]?[a-z]+\d{1,2}$/',
+                $username
+            );
+        }
+    }
+
     public function testGenerateEmails(): void
     {
         $result = generate('email', 20);
@@ -57,6 +71,17 @@ final class GeneratorTest extends TestCase
         }
     }
 
+    public function testGenerateUrls(): void
+    {
+        $result = generate('url', 20);
+
+        $this->assertCount(20, $result);
+
+        foreach ($result as $url) {
+            $this->assertNotFalse(filter_var($url, FILTER_VALIDATE_URL), $url);
+        }
+    }
+
     public function testGenerateColors(): void
     {
         $result = generate('color', 15);
@@ -67,6 +92,17 @@ final class GeneratorTest extends TestCase
             $this->assertArrayHasKey('hex', $color);
             $this->assertArrayHasKey('rgb', $color);
             $this->assertArrayHasKey('hsl', $color);
+        }
+    }
+
+    public function testGenerateDates(): void
+    {
+        $result = generate('date', 20);
+
+        $this->assertCount(20, $result);
+
+        foreach ($result as $date) {
+            $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}$/', $date);
         }
     }
 

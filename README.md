@@ -10,7 +10,7 @@ FakeGen is an open-source fake data generator built for developers who need real
 
 ## ✨ Features
 
-- 🎲 Generate names, emails, phone numbers, passwords, colors, and full user profiles
+- 🎲 Generate names, usernames, emails, phone numbers, passwords, URLs, dates, colors, and full user profiles
 - 🔢 Generate up to 10,000 items at once
 - 🔐 Customizable passwords: choose length and character sets
 - 📋 Copy results to clipboard with one click
@@ -26,9 +26,12 @@ FakeGen is an open-source fake data generator built for developers who need real
 | Type         | Example                                                        |
 | ------------ | -------------------------------------------------------------- |
 | Name         | James Smith                                                    |
+| Username     | james_smith42                                                  |
 | Email        | james.smith@gmail.com                                          |
 | Phone        | +44 759284732                                                  |
 | Password     | m7@Q!xP2#Ld9                                                   |
+| URL          | https://www.harrison-labs.io/about                             |
+| Date         | 1994-07-23                                                     |
 | Color        | `#2F98D4`, `rgb(47,152,212)`, `hsl(201,64%,51%)`               |
 | User Profile | Name, email, phone, password, and favorite color in one object |
 
@@ -38,15 +41,15 @@ FakeGen is an open-source fake data generator built for developers who need real
 
 Send a `POST` request to `api/generate.php`.
 
-| Parameter   | Description                                           | Default  |
-| ----------- | ----------------------------------------------------- | -------- |
-| `type`      | `name`, `email`, `phone`, `password`, `color`, `user` | required |
-| `quantity`  | Number of items, from 1 to 10,000                     | required |
-| `length`    | Password length, from 4 to 256 (passwords and users)  | 16       |
-| `uppercase` | Include uppercase letters (`true`/`false`)            | true     |
-| `lowercase` | Include lowercase letters                             | true     |
-| `numbers`   | Include digits                                        | true     |
-| `symbols`   | Include symbols                                       | true     |
+| Parameter   | Description                                                                      | Default  |
+| ----------- | -------------------------------------------------------------------------------- | -------- |
+| `type`      | `name`, `username`, `email`, `phone`, `password`, `url`, `date`, `color`, `user` | required |
+| `quantity`  | Number of items, from 1 to 10,000                                                | required |
+| `length`    | Password length, from 4 to 256 (passwords and users)                             | 16       |
+| `uppercase` | Include uppercase letters (`true`/`false`)                                       | true     |
+| `lowercase` | Include lowercase letters                                                        | true     |
+| `numbers`   | Include digits                                                                   | true     |
+| `symbols`   | Include symbols                                                                  | true     |
 
 Example:
 
@@ -104,7 +107,7 @@ vendor/bin/phpunit
 - [x] Names, emails, and phone numbers
 - [x] Colors and passwords
 - [x] Multi-type generation (full user profiles)
-- [ ] More data types (usernames, URLs, dates)
+- [x] More data types (usernames, URLs, dates)
 - [ ] Address generation
 - [ ] More export formats (CSV, SQL, XML)
 - [ ] Locale support (names and phone formats by country)
