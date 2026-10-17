@@ -43,6 +43,13 @@ require_once 'layout/head.php';
                                 </p>
                             </div>
 
+                            <?php
+
+                            $typeGroups = require 'layout/partials/types.php';
+                            $selectedType = $_GET['type'] ?? '';
+
+                            ?>
+
                             <form id="generatorForm" class="space-y-6">
                                 <!-- Type -->
                                 <div>
@@ -56,35 +63,15 @@ require_once 'layout/head.php';
                                             Select a type
                                         </option>
 
-                                        <option value="color"
-                                            <?= isset($_GET['type']) && $_GET['type'] == 'color' ? 'selected' : '' ?>>
-                                            Fake Colors
-                                        </option>
-
-                                        <option value="email"
-                                            <?= isset($_GET['type']) && $_GET['type'] == 'email' ? 'selected' : '' ?>>
-                                            Fake Emails
-                                        </option>
-
-                                        <option value="name"
-                                            <?= isset($_GET['type']) && $_GET['type'] == 'name' ? 'selected' : '' ?>>
-                                            Fake Names
-                                        </option>
-
-                                        <option value="password"
-                                            <?= isset($_GET['type']) && $_GET['type'] == 'password' ? 'selected' : '' ?>>
-                                            Fake Passwords
-                                        </option>
-
-                                        <option value="phone"
-                                            <?= isset($_GET['type']) && $_GET['type'] == 'phone' ? 'selected' : '' ?>>
-                                            Fake Phones
-                                        </option>
-
-                                        <option value="user"
-                                            <?= isset($_GET['type']) && $_GET['type'] == 'user' ? 'selected' : '' ?>>
-                                            Fake User Profiles
-                                        </option>
+                                        <?php foreach ($typeGroups as $group => $types): ?>
+                                            <optgroup label="<?= $group ?>">
+                                                <?php foreach ($types as $value => $label): ?>
+                                                    <option value="<?= $value ?>" <?= $selectedType === $value ? 'selected' : '' ?>>
+                                                        <?= $label ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </optgroup>
+                                        <?php endforeach; ?>
 
                                     </select>
                                 </div>

@@ -368,4 +368,68 @@ if (!function_exists('getRandomPassword')) {
 
         return implode('', $password);
     }
+
+    if (!function_exists('getRandomUsername')) {
+        /**
+         * Generate a random username from a first name, last name, and number.
+         *
+         * Example output:
+         * james_smith42
+         *
+         * @param array<string, array<string>> $names
+         * @return string
+         */
+        function getRandomUsername(array $names): string
+        {
+            $separators = ['', '.', '_'];
+
+            return strtolower(
+                getRandomFirstName($names)
+                    . $separators[array_rand($separators)]
+                    . getRandomLastName($names)
+                    . random_int(1, 99)
+            );
+        }
+    }
+
+    if (!function_exists('getRandomUrl')) {
+        /**
+         * Generate a random website URL.
+         *
+         * Example output:
+         * https://www.harrison-labs.io/about
+         *
+         * @param array<string, array<string>> $names
+         * @return string
+         */
+        function getRandomUrl(array $names): string
+        {
+            $suffixes = ['studio', 'labs', 'group', 'works', 'tech', 'media', 'hub'];
+            $tlds = ['com', 'net', 'org', 'io', 'dev', 'co'];
+            $paths = ['', '/about', '/blog', '/contact', '/products', '/pricing'];
+
+            return sprintf(
+                'https://www.%s-%s.%s%s',
+                strtolower(getRandomLastName($names)),
+                $suffixes[array_rand($suffixes)],
+                $tlds[array_rand($tlds)],
+                $paths[array_rand($paths)]
+            );
+        }
+    }
+
+    if (!function_exists('getRandomDate')) {
+        /**
+         * Generate a random date between 1970-01-01 and today.
+         *
+         * Example output:
+         * 1994-07-23
+         *
+         * @return string Date in YYYY-MM-DD format.
+         */
+        function getRandomDate(): string
+        {
+            return gmdate('Y-m-d', random_int(0, time()));
+        }
+    }
 }

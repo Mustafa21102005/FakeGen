@@ -18,7 +18,7 @@
                 <li>
                     <details>
                         <summary>Generate</summary>
-                        <ul class="w-37">
+                        <ul class="w-38">
                             <?php
                             require './layout/partials/generate-links.php';
                             ?>
