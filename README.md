@@ -11,10 +11,9 @@ FakeGen is an open-source fake data generator built for developers who need real
 ## ✨ Features
 
 - 🎲 Generate names, usernames, emails, phone numbers, passwords, URLs, dates, colors, and full user profiles
-- 🔢 Generate up to 10,000 items at once
+- 🔢 Generate up to 10,000 items at once (the page previews the first 50; Copy and Download include everything)
 - 🔐 Customizable passwords: choose length and character sets
-- 📋 Copy results to clipboard with one click
-- 💾 Download generated data as a `.json` file
+- 📤 Export as JSON, CSV, SQL, or XML, with one-click copy or download
 - 🔌 Simple HTTP API you can call from your own scripts
 - 🔒 Zero data collection — nothing is stored or tracked
 - ⚡ Fast and lightweight, no build step
@@ -34,6 +33,17 @@ FakeGen is an open-source fake data generator built for developers who need real
 | Date         | 1994-07-23                                                     |
 | Color        | `#2F98D4`, `rgb(47,152,212)`, `hsl(201,64%,51%)`               |
 | User Profile | Name, email, phone, password, and favorite color in one object |
+
+---
+
+## 📤 Export Formats
+
+| Format | Notes                                                                             |
+| ------ | --------------------------------------------------------------------------------- |
+| JSON   | Plain strings are wrapped as `{ "type": "value" }`; objects stay as-is            |
+| CSV    | Nested fields are flattened (`favorite_color_hex`); values are quoted when needed |
+| SQL    | A single multi-row `INSERT INTO fakegen_<type>` statement                         |
+| XML    | One `<record>` per item inside a `<records>` root                                 |
 
 ---
 
@@ -59,7 +69,31 @@ curl -X POST http://localhost:8000/api/generate.php -d "type=name&quantity=3"
 
 > **Windows PowerShell users:** use `curl.exe` instead of `curl`, since PowerShell aliases `curl` to a different command.
 
-The response is a JSON array. Invalid input returns HTTP `422` with a `message` field, and non-POST requests return `405`.
+Example responses:
+
+```json
+["James Smith", "Emily Brooks", "Daniel Rivera"]
+```
+
+```json
+[
+  {
+    "name": "Olivia Carter",
+    "email": "olivia.carter@proton.me",
+    "phone": "+966 512345678",
+    "password": "m7@Q!xP2#Ld9aB4k",
+    "favorite_color": {
+      "hex": "#2F98D4",
+      "rgb": "rgb(47,152,212)",
+      "hsl": "hsl(201,64%,51%)"
+    }
+  }
+]
+```
+
+The API always returns JSON. Export formats (CSV, SQL, XML) are produced by the web interface.
+
+Invalid input returns HTTP `422` with a `message` field, and non-POST requests return `405`. The API sends `Access-Control-Allow-Origin: *`, so it can be called from other websites' JavaScript.
 
 ---
 
@@ -97,7 +131,7 @@ vendor/bin/phpunit
 
 - PHP — data generation and API
 - HTML / Tailwind CSS / DaisyUI — frontend
-- Vanilla JavaScript — fetch API, copy, download
+- Vanilla JavaScript — fetch API, export formats, copy, download
 - PHPUnit — tests
 
 ---
@@ -108,8 +142,9 @@ vendor/bin/phpunit
 - [x] Colors and passwords
 - [x] Multi-type generation (full user profiles)
 - [x] More data types (usernames, URLs, dates)
-- [ ] More export formats (CSV, SQL, XML)
+- [x] Export formats (CSV, SQL, XML)
 - [ ] Address generation
+- [ ] Searchable data type dropdown
 - [ ] Custom schema builder
 
 Ideas and contributions are welcome — feel free to open an issue.
