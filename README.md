@@ -14,6 +14,7 @@ FakeGen is an open-source fake data generator built for developers who need real
 - 🔢 Generate up to 10,000 items at once (the page previews the first 50; Copy and Download include everything)
 - 🔐 Customizable passwords: choose length and character sets
 - 📤 Export as JSON, CSV, SQL, or XML, with one-click copy or download
+- 👆 Click any result to copy it on its own (colors copy their HEX value)
 - 🔌 Simple HTTP API you can call from your own scripts
 - 🔒 Zero data collection — nothing is stored or tracked
 - ⚡ Fast and lightweight, no build step
