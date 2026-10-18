@@ -108,10 +108,8 @@ vendor/bin/phpunit
 - [x] Colors and passwords
 - [x] Multi-type generation (full user profiles)
 - [x] More data types (usernames, URLs, dates)
-- [ ] Address generation
 - [ ] More export formats (CSV, SQL, XML)
-- [ ] Locale support (names and phone formats by country)
-- [ ] Seeded generation for reproducible output
+- [ ] Address generation
 - [ ] Custom schema builder
 
 Ideas and contributions are welcome — feel free to open an issue.
