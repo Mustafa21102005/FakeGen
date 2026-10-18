@@ -1,7 +1,7 @@
 <?php
 $title = 'Generate';
-$description = 'Generate realistic fake names, emails, and phone numbers in one click. Copy to clipboard or download as JSON — fast, free, and private.';
-$keywords = 'generate fake names, fake emails, fake phone numbers, dummy data, JSON test data';
+$description = 'Generate realistic fake names, emails, phone numbers, and more in one click. Copy or download as JSON, CSV, SQL, or XML — fast, free, and private.';
+$keywords = 'generate fake names, fake emails, fake phone numbers, dummy data, JSON test data, CSV, SQL';
 $canonical = 'https://fakegen.infinityfreeapp.com/generate.php';
 require_once 'layout/head.php';
 ?>
@@ -22,7 +22,7 @@ require_once 'layout/head.php';
                         instantly
                     </h1>
                     <p class="py-6 text-xl text-base-content/70">
-                        Create fake names, emails, and phone numbers for testing, demos, development, and prototypes.
+                        Create fake names, emails, usernames, passwords, and more for testing, demos, development, and prototypes.
                     </p>
                 </div>
             </div>
@@ -137,7 +137,7 @@ require_once 'layout/head.php';
                 </div>
 
                 <div class="lg:col-span-3">
-                    <div class="flex items-center justify-between mb-5">
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
                         <div>
                             <h2 class="text-3xl font-bold">
                                 Results
@@ -146,13 +146,26 @@ require_once 'layout/head.php';
                                 Generated data will appear here.
                             </p>
                         </div>
-                        <div class="flex flex-wrap gap-2 justify-end me-2">
-                            <button id="downloadBtn" class="btn btn-accent hidden">
-                                Download JSON
+                        <div id="exportBar" class="join hidden me-2">
+                            <select id="formatSelect" class="select join-item" aria-label="Export format">
+                                <option value="json">JSON</option>
+                                <option value="csv">CSV</option>
+                                <option value="sql">SQL</option>
+                                <option value="xml">XML</option>
+                            </select>
+
+                            <button id="copyBtn" type="button" class="btn btn-secondary join-item gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                </svg>
+                                <span id="copyLabel">Copy JSON</span>
                             </button>
 
-                            <button id="copyBtn" class="btn btn-secondary hidden">
-                                Copy JSON
+                            <button id="downloadBtn" type="button" class="btn btn-accent join-item gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                                </svg>
+                                <span id="downloadLabel">Download JSON</span>
                             </button>
                         </div>
                     </div>
@@ -179,10 +192,11 @@ require_once 'layout/head.php';
     <?php require_once 'layout/footer.php'; ?>
 
     <script>
+        // ---------------------------------------------------------------
+        // 1. Element lookups (all in one place, before anything uses them)
+        // ---------------------------------------------------------------
         const form = document.getElementById('generatorForm');
         const results = document.getElementById('results');
-        const copyBtn = document.getElementById('copyBtn');
-        const downloadBtn = document.getElementById('downloadBtn');
         const typeSelect = form.querySelector('[name="type"]');
         const passwordOptions = document.getElementById('passwordOptions');
         const generateBtn = form.querySelector('button[type="submit"]');
@@ -191,6 +205,23 @@ require_once 'layout/head.php';
         const numbers = form.querySelector('[name="numbers"]');
         const symbols = form.querySelector('[name="symbols"]');
 
+        const exportBar = document.getElementById('exportBar');
+        const formatSelect = document.getElementById('formatSelect');
+        const copyBtn = document.getElementById('copyBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const copyLabel = document.getElementById('copyLabel');
+        const downloadLabel = document.getElementById('downloadLabel');
+
+        // ---------------------------------------------------------------
+        // 2. State
+        // ---------------------------------------------------------------
+        let lastResult = null;
+
+        const PREVIEW_LIMIT = 50;
+
+        // ---------------------------------------------------------------
+        // 3. Password options
+        // ---------------------------------------------------------------
         function togglePasswordOptions() {
             if (typeSelect.value === 'password') {
                 passwordOptions.classList.remove('hidden');
@@ -222,19 +253,21 @@ require_once 'layout/head.php';
             generateBtn.disabled = !enabled;
         }
 
-        typeSelect.addEventListener('change', togglePasswordOptions);
+        [uppercase, lowercase, numbers, symbols].forEach(box =>
+            box.addEventListener('change', validatePasswordOptions)
+        );
+
+        typeSelect.addEventListener('change', () => {
+            togglePasswordOptions();
+            validatePasswordOptions();
+        });
 
         togglePasswordOptions();
-
-        uppercase.addEventListener('change', validatePasswordOptions);
-        lowercase.addEventListener('change', validatePasswordOptions);
-        numbers.addEventListener('change', validatePasswordOptions);
-        symbols.addEventListener('change', validatePasswordOptions);
-
-        typeSelect.addEventListener('change', validatePasswordOptions);
-
         validatePasswordOptions();
 
+        // ---------------------------------------------------------------
+        // 4. Rendering
+        // ---------------------------------------------------------------
         function renderStrings(data) {
             return `
                 <div class="space-y-2 font-mono text-sm">
@@ -245,14 +278,6 @@ require_once 'layout/head.php';
                     `).join('')}
                 </div>
             `;
-        }
-
-        function toJson(type, data) {
-            return data.map(item =>
-                typeof item === 'string' ? {
-                    [type]: item
-                } : item
-            );
         }
 
         function renderColors(data) {
@@ -293,6 +318,15 @@ require_once 'layout/head.php';
             `;
         }
 
+        function previewNotice(total) {
+            if (total <= PREVIEW_LIMIT) return '';
+
+            return `<p class="text-sm opacity-70 mb-4">
+                Showing the first ${PREVIEW_LIMIT} of ${total.toLocaleString()} results.
+                Copy and Download include all of them.
+            </p>`;
+        }
+
         async function updateResults(html) {
             results.classList.add('is-changing');
 
@@ -303,18 +337,246 @@ require_once 'layout/head.php';
             results.classList.remove('is-changing');
         }
 
+        // ---------------------------------------------------------------
+        // 5. Export formats
+        // ---------------------------------------------------------------
+        function toJson(type, data) {
+            return data.map(item =>
+                typeof item === 'string' ? {
+                    [type]: item
+                } : item
+            );
+        }
+
+        function flatten(obj, prefix = '') {
+            return Object.entries(obj).reduce((acc, [key, value]) => {
+                const name = prefix ? `${prefix}_${key}` : key;
+
+                if (value !== null && typeof value === 'object') {
+                    Object.assign(acc, flatten(value, name));
+                } else {
+                    acc[name] = value;
+                }
+
+                return acc;
+            }, {});
+        }
+
+        function toCsv(rows) {
+            const flat = rows.map(row => flatten(row));
+            const headers = Object.keys(flat[0]);
+
+            const escape = value => {
+                const text = String(value);
+                return /[",\r\n]/.test(text) ?
+                    `"${text.replace(/"/g, '""')}"` :
+                    text;
+            };
+
+            return [
+                headers.join(','),
+                ...flat.map(row => headers.map(h => escape(row[h])).join(','))
+            ].join('\r\n');
+        }
+
+        function toSql(type, rows) {
+            const flat = rows.map(row => flatten(row));
+            const columns = Object.keys(flat[0]);
+
+            const quote = value => `'${String(value).replace(/'/g, "''")}'`;
+
+            const values = flat.map(row =>
+                `  (${columns.map(c => quote(row[c])).join(', ')})`
+            );
+
+            return `INSERT INTO fakegen_${type} (${columns.join(', ')}) VALUES\n${values.join(',\n')};`;
+        }
+
+        function toXml(rows) {
+            const escape = text => String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&apos;');
+
+            const records = rows.map(row => {
+                const fields = Object.entries(flatten(row))
+                    .map(([key, value]) => `    <${key}>${escape(value)}</${key}>`)
+                    .join('\n');
+
+                return `  <record>\n${fields}\n  </record>`;
+            });
+
+            // \x3C is "<": written this way so PHP doesn't mistake it for a PHP tag
+            return `\x3C?xml version="1.0" encoding="UTF-8"?>\n<records>\n${records.join('\n')}\n</records>`;
+        }
+
+        const formats = {
+            json: {
+                extension: 'json',
+                mime: 'application/json',
+                build: (type, rows) => JSON.stringify(rows, null, 2)
+            },
+            csv: {
+                extension: 'csv',
+                mime: 'text/csv',
+                build: (type, rows) => toCsv(rows)
+            },
+            sql: {
+                extension: 'sql',
+                mime: 'application/sql',
+                build: (type, rows) => toSql(type, rows)
+            },
+            xml: {
+                extension: 'xml',
+                mime: 'application/xml',
+                build: (type, rows) => toXml(rows)
+            }
+        };
+
+        // ---------------------------------------------------------------
+        // 6. Export toolbar (copy / download)
+        // ---------------------------------------------------------------
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        // Slides the old label up and fades it out, swaps the text,
+        // then slides the new label in from below.
+        function swapLabel(el, text) {
+            el.dataset.target = text;
+
+            if (el.textContent === text) return;
+
+            if (reduceMotion.matches) {
+                el.textContent = text;
+                return;
+            }
+
+            // If a swap is already running (user changing formats quickly), restart it
+            el.getAnimations().forEach(animation => animation.cancel());
+
+            el.animate([{
+                    opacity: 1,
+                    transform: 'translateY(0)'
+                },
+                {
+                    opacity: 0,
+                    transform: 'translateY(-6px)'
+                }
+            ], {
+                duration: 120,
+                easing: 'ease-in'
+            }).finished.then(() => {
+                el.textContent = el.dataset.target;
+
+                el.animate([{
+                        opacity: 0,
+                        transform: 'translateY(6px)'
+                    },
+                    {
+                        opacity: 1,
+                        transform: 'translateY(0)'
+                    }
+                ], {
+                    duration: 160,
+                    easing: 'ease-out'
+                });
+            }).catch(() => {});
+        }
+
+        // A quick "pop" on both buttons so the change is noticeable
+        function popButtons() {
+            if (reduceMotion.matches) return;
+
+            [copyBtn, downloadBtn].forEach(btn =>
+                btn.animate([{
+                        transform: 'scale(1)'
+                    },
+                    {
+                        transform: 'scale(1.06)'
+                    },
+                    {
+                        transform: 'scale(1)'
+                    }
+                ], {
+                    duration: 250,
+                    easing: 'ease-out'
+                })
+            );
+        }
+
+        function updateExportLabels(pop = false) {
+            const name = formatSelect.value.toUpperCase();
+
+            swapLabel(copyLabel, `Copy ${name}`);
+            swapLabel(downloadLabel, `Download ${name}`);
+
+            if (pop === true) popButtons();
+        }
+
+        function buildExport() {
+            const format = formats[formatSelect.value];
+            const rows = toJson(lastResult.type, lastResult.data);
+
+            return {
+                format,
+                text: format.build(lastResult.type, rows)
+            };
+        }
+
+        formatSelect.addEventListener('change', () => updateExportLabels(true));
+
+        copyBtn.addEventListener('click', async () => {
+            if (!lastResult) return;
+
+            try {
+                await navigator.clipboard.writeText(buildExport().text);
+                copyLabel.textContent = 'Copied!';
+            } catch {
+                copyLabel.textContent = 'Copy failed';
+            }
+
+            setTimeout(updateExportLabels, 2000);
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            if (!lastResult) return;
+
+            const {
+                format,
+                text
+            } = buildExport();
+
+            const blob = new Blob([text], {
+                type: `${format.mime};charset=utf-8`
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+
+            a.href = url;
+            a.download = `fakegen-${lastResult.type}.${format.extension}`;
+
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        updateExportLabels();
+
+        // ---------------------------------------------------------------
+        // 7. Form submit
+        // ---------------------------------------------------------------
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const type = form.querySelector('[name="type"]').value;
+            lastResult = null;
+            exportBar.classList.add('hidden');
+
+            const type = typeSelect.value;
             const quantity = form.querySelector('[name="quantity"]').value;
-
             const length = form.querySelector('[name="length"]').value;
-
-            const uppercaseValue = uppercase.checked;
-            const lowercaseValue = lowercase.checked;
-            const numbersValue = numbers.checked;
-            const symbolsValue = symbols.checked;
 
             await updateResults(`
                 <div class="flex items-center justify-center h-full">
@@ -332,10 +594,10 @@ require_once 'layout/head.php';
                         type,
                         quantity,
                         length,
-                        uppercase: uppercaseValue,
-                        lowercase: lowercaseValue,
-                        numbers: numbersValue,
-                        symbols: symbolsValue
+                        uppercase: uppercase.checked,
+                        lowercase: lowercase.checked,
+                        numbers: numbers.checked,
+                        symbols: symbols.checked
                     })
                 });
 
@@ -346,60 +608,42 @@ require_once 'layout/head.php';
                 }
 
                 if (!Array.isArray(data)) {
-                    results.innerHTML = `<pre><code>Error generating data.</code></pre>`;
-                    return;
+                    throw new Error('Error generating data.');
                 }
 
+                const shown = data.slice(0, PREVIEW_LIMIT);
+
                 await updateResults(
-                    type === 'color' ?
-                    renderColors(data) :
-                    renderStrings(data)
+                    previewNotice(data.length) +
+                    (type === 'color' ? renderColors(shown) : renderStrings(shown))
                 );
 
                 if (type === 'color') {
-                    const cards = results.querySelectorAll('.color-card');
-
-                    cards.forEach((card, index) => {
-                        setTimeout(() => {
-                            card.classList.add('show');
-                        }, index * 60);
+                    results.querySelectorAll('.color-card').forEach((card, index) => {
+                        setTimeout(() => card.classList.add('show'), index * 60);
                     });
                 }
 
-                copyBtn.classList.remove('hidden');
-                downloadBtn.classList.remove('hidden');
-
-                copyBtn.onclick = async () => {
-                    const json = toJson(type, data);
-
-                    await navigator.clipboard.writeText(
-                        JSON.stringify(json, null, 2)
-                    );
-
-                    copyBtn.textContent = 'Copied!';
-
-                    setTimeout(() => {
-                        copyBtn.textContent = 'Copy JSON';
-                    }, 2000);
+                lastResult = {
+                    type,
+                    data
                 };
+                exportBar.classList.remove('hidden');
 
-                downloadBtn.onclick = () => {
-                    const blob = new Blob([JSON.stringify(toJson(type, data), null, 2)], {
-                        type: 'application/json'
+                if (!reduceMotion.matches) {
+                    exportBar.animate([{
+                            opacity: 0,
+                            transform: 'translateY(-6px)'
+                        },
+                        {
+                            opacity: 1,
+                            transform: 'translateY(0)'
+                        }
+                    ], {
+                        duration: 250,
+                        easing: 'ease-out'
                     });
-
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-
-                    a.href = url;
-                    a.download = `fakegen-${type}.json`;
-
-                    document.body.appendChild(a);
-                    a.click();
-
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                };
+                }
 
             } catch (error) {
                 await updateResults(`
