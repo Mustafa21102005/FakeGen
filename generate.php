@@ -84,7 +84,7 @@ require_once 'layout/head.php';
                                         </span>
                                     </label>
 
-                                    <input type="number" name="quantity" min="1" placeholder="Max is 10,000 😁" max="10000" class="input input-lg w-full" required>
+                                    <input type="number" name="quantity" min="1" value="10" placeholder="Max is 10,000 😁" max="10000" class="input input-lg w-full" required>
                                 </div>
 
                                 <div id="passwordOptions" class="hidden space-y-4">
@@ -271,8 +271,9 @@ require_once 'layout/head.php';
         function renderStrings(data) {
             return `
                 <div class="space-y-2 font-mono text-sm">
-                    ${data.map(item => `
-                        <div class="bg-base-100/10 rounded-lg px-4 py-3 border border-white/5">
+                    ${data.map((item, index) => `
+                        <div data-index="${index}" title="Click to copy"
+                            class="relative cursor-pointer bg-base-100/10 hover:bg-base-100/20 transition-colors rounded-lg px-4 py-3 border border-white/5">
                             <pre>${JSON.stringify(item, null, 2)}</pre>
                         </div>
                     `).join('')}
@@ -285,7 +286,8 @@ require_once 'layout/head.php';
                 <div class="grid sm:grid-cols-2 gap-4">
                     ${data.map((color, index) => `
                         <div
-                            class="color-card text-black rounded-xl overflow-hidden border border-base-300 bg-base-100 shadow-lg"
+                            data-index="${index}" title="Click to copy the HEX value"
+                            class="color-card relative cursor-pointer text-black rounded-xl overflow-hidden border border-base-300 bg-base-100 shadow-lg"
                             style="animation-delay:${index * 50}ms">
 
                             <div
@@ -568,15 +570,25 @@ require_once 'layout/head.php';
         // ---------------------------------------------------------------
         // 7. Form submit
         // ---------------------------------------------------------------
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // Reads the current form values into a plain object
+        function readForm() {
+            return {
+                type: typeSelect.value,
+                quantity: form.querySelector('[name="quantity"]').value,
+                length: form.querySelector('[name="length"]').value,
+                uppercase: uppercase.checked,
+                lowercase: lowercase.checked,
+                numbers: numbers.checked,
+                symbols: symbols.checked
+            };
+        }
 
+        // Runs one generation request with the given settings
+        async function runGenerate(params) {
             lastResult = null;
             exportBar.classList.add('hidden');
 
-            const type = typeSelect.value;
-            const quantity = form.querySelector('[name="quantity"]').value;
-            const length = form.querySelector('[name="length"]').value;
+            const type = params.type;
 
             await updateResults(`
                 <div class="flex items-center justify-center h-full">
@@ -590,15 +602,7 @@ require_once 'layout/head.php';
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
-                    body: new URLSearchParams({
-                        type,
-                        quantity,
-                        length,
-                        uppercase: uppercase.checked,
-                        lowercase: lowercase.checked,
-                        numbers: numbers.checked,
-                        symbols: symbols.checked
-                    })
+                    body: new URLSearchParams(params)
                 });
 
                 const data = await response.json();
@@ -651,6 +655,50 @@ require_once 'layout/head.php';
                         <span>${error.message}</span>
                     </div>
                 `);
+            }
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            runGenerate(readForm());
+        });
+
+        // ---------------------------------------------------------------
+        // 8. Click a result to copy it
+        // ---------------------------------------------------------------
+        function flashBadge(card, message) {
+            card.querySelector('.copy-badge')?.remove();
+
+            const badge = document.createElement('span');
+            badge.className = 'copy-badge badge badge-primary badge-sm absolute top-2 right-2 z-10';
+            badge.textContent = message;
+
+            card.appendChild(badge);
+            setTimeout(() => badge.remove(), 900);
+        }
+
+        // One listener on the results box handles every card (event delegation)
+        results.addEventListener('click', async (e) => {
+            const card = e.target.closest('[data-index]');
+
+            if (!card || !lastResult) return;
+
+            // Don't hijack the click if the person is selecting text
+            if (window.getSelection().toString()) return;
+
+            const item = lastResult.data[Number(card.dataset.index)];
+
+            const text = lastResult.type === 'color' ?
+                item.hex :
+                typeof item === 'string' ?
+                item :
+                JSON.stringify(item, null, 2);
+
+            try {
+                await navigator.clipboard.writeText(text);
+                flashBadge(card, 'Copied!');
+            } catch {
+                flashBadge(card, 'Copy failed');
             }
         });
     </script>
